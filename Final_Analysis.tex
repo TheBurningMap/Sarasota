@@ -1,0 +1,2046 @@
+This is an \href{http://rmarkdown.rstudio.com}{R Markdown} Notebook.
+When you execute code within the notebook, the results appear beneath
+the code.
+
+Try executing this chunk by clicking the \emph{Run} button within the
+chunk or by placing your cursor inside it and pressing
+\emph{Ctrl+Shift+Enter}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{plot}\NormalTok{(cars)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Final_Analysis_files/figure-latex/unnamed-chunk-1-1.pdf}
+
+Add a new chunk by clicking the \emph{Insert Chunk} button on the
+toolbar or by pressing \emph{Ctrl+Alt+I}.
+
+When you save the notebook, an HTML file containing the code and output
+will be saved alongside it (click the \emph{Preview} button or press
+\emph{Ctrl+Shift+K} to preview the HTML file).
+
+This analysis is done in a reproducible research manner. All Tables,
+Figures and Statistical Analyses were created in the open source
+software package R.
+
+\section{Analysis}\label{analysis}
+
+\subsubsection{Load Data}\label{load-data}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{knitr::opts_chunk$}\KeywordTok{set}\NormalTok{(}\DataTypeTok{echo =} \OtherTok{TRUE}\NormalTok{, }\DataTypeTok{warning=}\OtherTok{FALSE}\NormalTok{, }\DataTypeTok{message=}\OtherTok{FALSE}\NormalTok{, }\DataTypeTok{comment =} \OtherTok{NA}\NormalTok{)}
+\KeywordTok{require}\NormalTok{(knitr)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Loading required package: knitr
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{require}\NormalTok{(bookdown)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Loading required package: bookdown
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(}\StringTok{"pander"}\NormalTok{, }\DataTypeTok{lib.loc=}\StringTok{"~/R/win-library/3.3"}\NormalTok{)}
+\KeywordTok{library}\NormalTok{(}\StringTok{"readr"}\NormalTok{, }\DataTypeTok{lib.loc=}\StringTok{"~/R/win-library/3.3"}\NormalTok{)}
+\KeywordTok{library}\NormalTok{(}\StringTok{"psych"}\NormalTok{, }\DataTypeTok{lib.loc=}\StringTok{"~/R/win-library/3.3"}\NormalTok{)}
+\KeywordTok{library}\NormalTok{(}\StringTok{"vcd"}\NormalTok{, }\DataTypeTok{lib.loc=}\StringTok{"~/R/win-library/3.3"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Loading required package: grid
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(}\StringTok{"hexbin"}\NormalTok{, }\DataTypeTok{lib.loc=}\StringTok{"~/R/win-library/3.3"}\NormalTok{)}
+\KeywordTok{setwd}\NormalTok{(}\StringTok{"C:/Users/Gregory/ownCloud/Sarasota"}\NormalTok{)}
+\NormalTok{sternite <-}\StringTok{ }\KeywordTok{read_csv}\NormalTok{(}\StringTok{"sternite.csv"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Parsed with column specification:
+## cols(
+##   ID = col_integer(),
+##   DATE = col_character(),
+##   LOC = col_integer(),
+##   SCUTUM = col_double(),
+##   STERGUM = col_double(),
+##   SPECIESNUM = col_integer(),
+##   SPECIES = col_character()
+## )
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{attach}\NormalTok{(sternite)}
+\NormalTok{SPECIES<-}\KeywordTok{as.factor}\NormalTok{(SPECIES)}
+\NormalTok{AEG <-}\StringTok{ }\KeywordTok{subset}\NormalTok{(sternite, sternite$SPECIES==}\StringTok{"AEG"}\NormalTok{)}
+\NormalTok{ALB <-}\StringTok{ }\KeywordTok{subset}\NormalTok{(sternite, sternite$SPECIES==}\StringTok{"ALB"}\NormalTok{)}
+\NormalTok{AEGMosaic <-}\StringTok{ }\KeywordTok{structable}\NormalTok{(AEG$SCUTUM ~}\StringTok{ }\NormalTok{AEG$STERGUM)}
+\NormalTok{ALBMosaic <-}\StringTok{ }\KeywordTok{structable}\NormalTok{(ALB$SCUTUM ~}\StringTok{ }\NormalTok{ALB$STERGUM)}
+\NormalTok{StergumMosaic <-}\StringTok{ }\KeywordTok{structable}\NormalTok{(STERGUM ~}\StringTok{ }\NormalTok{SPECIES)}
+\NormalTok{StergumMosaic2 <-}\StringTok{ }\KeywordTok{table}\NormalTok{(SPECIES,STERGUM)}
+\NormalTok{ScutumMosaic <-}\StringTok{ }\KeywordTok{structable}\NormalTok{(SCUTUM ~}\StringTok{ }\NormalTok{SPECIES)}
+\NormalTok{ScutumMosaic2 <-}\StringTok{ }\KeywordTok{table}\NormalTok{(SPECIES,SCUTUM)}
+\NormalTok{knitr::}\KeywordTok{include_graphics}\NormalTok{(}\KeywordTok{rep}\NormalTok{(}\StringTok{"FMEL.jpg"}\NormalTok{, }\DecValTok{1}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics[width=12in]{FMEL}
+
+\subsection{AEG/ALB Data (Both Species)}\label{aegalb-data-both-species}
+
+\subsubsection{AEG/ALB Summary}\label{aegalb-summary}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{pander}\NormalTok{(}\KeywordTok{summary}\NormalTok{(sternite[,}\DecValTok{4}\NormalTok{:}\DecValTok{5}\NormalTok{]), }\DataTypeTok{caption =} \StringTok{"Table 1. Summary of Sternite Dataset"}\NormalTok{, }\DataTypeTok{split.table =} \OtherTok{Inf}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}cc@{}}
+\caption{Table 1. Summary of Sternite Dataset}\tabularnewline
+\toprule
+\begin{minipage}[b]{0.22\columnwidth}\centering\strut
+SCUTUM\strut
+\end{minipage} & \begin{minipage}[b]{0.22\columnwidth}\centering\strut
+STERGUM\strut
+\end{minipage}\tabularnewline
+\midrule
+\endfirsthead
+\toprule
+\begin{minipage}[b]{0.22\columnwidth}\centering\strut
+SCUTUM\strut
+\end{minipage} & \begin{minipage}[b]{0.22\columnwidth}\centering\strut
+STERGUM\strut
+\end{minipage}\tabularnewline
+\midrule
+\endhead
+\begin{minipage}[t]{0.22\columnwidth}\centering\strut
+Min. :0.0000\strut
+\end{minipage} & \begin{minipage}[t]{0.22\columnwidth}\centering\strut
+Min. :0.0000\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.22\columnwidth}\centering\strut
+1st Qu.:0.1000\strut
+\end{minipage} & \begin{minipage}[t]{0.22\columnwidth}\centering\strut
+1st Qu.:0.8000\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.22\columnwidth}\centering\strut
+Median :0.2000\strut
+\end{minipage} & \begin{minipage}[t]{0.22\columnwidth}\centering\strut
+Median :1.0000\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.22\columnwidth}\centering\strut
+Mean :0.3372\strut
+\end{minipage} & \begin{minipage}[t]{0.22\columnwidth}\centering\strut
+Mean :0.8665\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.22\columnwidth}\centering\strut
+3rd Qu.:0.6000\strut
+\end{minipage} & \begin{minipage}[t]{0.22\columnwidth}\centering\strut
+3rd Qu.:1.0000\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.22\columnwidth}\centering\strut
+Max. :1.0000\strut
+\end{minipage} & \begin{minipage}[t]{0.22\columnwidth}\centering\strut
+Max. :1.0000\strut
+\end{minipage}\tabularnewline
+\bottomrule
+\end{longtable}
+
+\subsubsection{AEG/ALB Description}\label{aegalb-description}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{pander}\NormalTok{(}\KeywordTok{describe}\NormalTok{(sternite[,}\DecValTok{4}\NormalTok{:}\DecValTok{5}\NormalTok{]), }\DataTypeTok{caption =} \StringTok{"Table 2. Description of Sternite Dataset"}\NormalTok{, }\DataTypeTok{split.table =} \OtherTok{Inf}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}cccccccccccccc@{}}
+\caption{Table 2. Description of Sternite Dataset}\tabularnewline
+\toprule
+\begin{minipage}[b]{0.07\columnwidth}\centering\strut
+~\strut
+\end{minipage} & \begin{minipage}[b]{0.04\columnwidth}\centering\strut
+vars\strut
+\end{minipage} & \begin{minipage}[b]{0.04\columnwidth}\centering\strut
+n\strut
+\end{minipage} & \begin{minipage}[b]{0.05\columnwidth}\centering\strut
+mean\strut
+\end{minipage} & \begin{minipage}[b]{0.05\columnwidth}\centering\strut
+sd\strut
+\end{minipage} & \begin{minipage}[b]{0.05\columnwidth}\centering\strut
+median\strut
+\end{minipage} & \begin{minipage}[b]{0.05\columnwidth}\centering\strut
+trimmed\strut
+\end{minipage} & \begin{minipage}[b]{0.05\columnwidth}\centering\strut
+mad\strut
+\end{minipage} & \begin{minipage}[b]{0.03\columnwidth}\centering\strut
+min\strut
+\end{minipage} & \begin{minipage}[b]{0.03\columnwidth}\centering\strut
+max\strut
+\end{minipage} & \begin{minipage}[b]{0.04\columnwidth}\centering\strut
+range\strut
+\end{minipage} & \begin{minipage}[b]{0.05\columnwidth}\centering\strut
+skew\strut
+\end{minipage} & \begin{minipage}[b]{0.06\columnwidth}\centering\strut
+kurtosis\strut
+\end{minipage} & \begin{minipage}[b]{0.06\columnwidth}\centering\strut
+se\strut
+\end{minipage}\tabularnewline
+\midrule
+\endfirsthead
+\toprule
+\begin{minipage}[b]{0.07\columnwidth}\centering\strut
+~\strut
+\end{minipage} & \begin{minipage}[b]{0.04\columnwidth}\centering\strut
+vars\strut
+\end{minipage} & \begin{minipage}[b]{0.04\columnwidth}\centering\strut
+n\strut
+\end{minipage} & \begin{minipage}[b]{0.05\columnwidth}\centering\strut
+mean\strut
+\end{minipage} & \begin{minipage}[b]{0.05\columnwidth}\centering\strut
+sd\strut
+\end{minipage} & \begin{minipage}[b]{0.05\columnwidth}\centering\strut
+median\strut
+\end{minipage} & \begin{minipage}[b]{0.05\columnwidth}\centering\strut
+trimmed\strut
+\end{minipage} & \begin{minipage}[b]{0.05\columnwidth}\centering\strut
+mad\strut
+\end{minipage} & \begin{minipage}[b]{0.03\columnwidth}\centering\strut
+min\strut
+\end{minipage} & \begin{minipage}[b]{0.03\columnwidth}\centering\strut
+max\strut
+\end{minipage} & \begin{minipage}[b]{0.04\columnwidth}\centering\strut
+range\strut
+\end{minipage} & \begin{minipage}[b]{0.05\columnwidth}\centering\strut
+skew\strut
+\end{minipage} & \begin{minipage}[b]{0.06\columnwidth}\centering\strut
+kurtosis\strut
+\end{minipage} & \begin{minipage}[b]{0.06\columnwidth}\centering\strut
+se\strut
+\end{minipage}\tabularnewline
+\midrule
+\endhead
+\begin{minipage}[t]{0.07\columnwidth}\centering\strut
+\textbf{SCUTUM}\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+1\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+1241\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+0.3372\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+0.3283\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+0.2\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+0.3015\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+0.2965\strut
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering\strut
+0\strut
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering\strut
+1\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+1\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+0.7975\strut
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering\strut
+-0.8095\strut
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering\strut
+0.00932\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.07\columnwidth}\centering\strut
+\textbf{STERGUM}\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+2\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+1241\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+0.8665\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+0.226\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+1\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+0.9224\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+0\strut
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering\strut
+0\strut
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering\strut
+1\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+1\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+-2.042\strut
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering\strut
+3.381\strut
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering\strut
+0.006415\strut
+\end{minipage}\tabularnewline
+\bottomrule
+\end{longtable}
+
+\subsubsection{AEG/ALB Dispersion}\label{aegalb-dispersion}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{boxplot}\NormalTok{(sternite[,}\DecValTok{4}\NormalTok{:}\DecValTok{5}\NormalTok{], }\DataTypeTok{col=}\KeywordTok{rainbow}\NormalTok{(}\DecValTok{2}\NormalTok{), }\DataTypeTok{main=}\StringTok{"AEG/ALB"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{figure}
+
+{\centering \includegraphics{Final_Analysis_files/figure-latex/Figure 1-1} 
+
+}
+
+\caption{Figure 1.}\label{Figure Figure 1}
+\end{figure}
+
+\subsubsection{AEG/ALB Distribution}\label{aegalb-distribution}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{par}\NormalTok{(}\DataTypeTok{mfrow=}\KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{,}\DecValTok{2}\NormalTok{))}
+\KeywordTok{hist}\NormalTok{(sternite$SCUTUM, }\DataTypeTok{xlab=}\StringTok{"Scutum"}\NormalTok{, }\DataTypeTok{main=}\StringTok{"AEG/ALB"}\NormalTok{, }\DataTypeTok{ylim =} \KeywordTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{700}\NormalTok{))}
+\KeywordTok{hist}\NormalTok{(sternite$STERGUM, }\DataTypeTok{xlab=}\StringTok{"Stergum"}\NormalTok{, }\DataTypeTok{main=}\StringTok{"AEG/ALB"}\NormalTok{, }\DataTypeTok{ylim =} \KeywordTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{700}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{figure}
+
+{\centering \includegraphics{Final_Analysis_files/figure-latex/Figure 2-1} 
+
+}
+
+\caption{Figure 2.}\label{Figure Figure 2}
+\end{figure}
+
+\subsubsection{AEG/ALB Hexbin of Scutum vs
+Stergum}\label{aegalb-hexbin-of-scutum-vs-stergum}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{res <-}\StringTok{ }\KeywordTok{hexbin}\NormalTok{(STERGUM, SCUTUM, }\DataTypeTok{xbins=}\DecValTok{11}\NormalTok{)}
+\KeywordTok{plot}\NormalTok{(res, }\DataTypeTok{main=}\StringTok{"AEG/ALB"}\NormalTok{, }\DataTypeTok{colramp=}\KeywordTok{colorRampPalette}\NormalTok{(}\KeywordTok{c}\NormalTok{(}\StringTok{'lightblue'}\NormalTok{,}\StringTok{'darkblue'}\NormalTok{)))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{figure}
+
+{\centering \includegraphics{Final_Analysis_files/figure-latex/Figure 3-1} 
+
+}
+
+\caption{Figure 3.}\label{Figure Figure 3}
+\end{figure}
+
+\subparagraph{AEG/ALB Discussion}\label{aegalb-discussion}
+
+When looking at both species, the scutum and stergum datasets appear to
+be heavily skewed, though in opposite directions.
+
+\subsection{AEG Data}\label{aeg-data}
+
+\subsubsection{AEG Summary}\label{aeg-summary}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{pander}\NormalTok{(}\KeywordTok{summary}\NormalTok{(AEG[,}\DecValTok{4}\NormalTok{:}\DecValTok{5}\NormalTok{]), }\DataTypeTok{caption =} \StringTok{"Table 3. Summary of AEG Dataset"}\NormalTok{, }\DataTypeTok{split.table =} \OtherTok{Inf}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}cc@{}}
+\caption{Table 3. Summary of AEG Dataset}\tabularnewline
+\toprule
+\begin{minipage}[b]{0.22\columnwidth}\centering\strut
+SCUTUM\strut
+\end{minipage} & \begin{minipage}[b]{0.22\columnwidth}\centering\strut
+STERGUM\strut
+\end{minipage}\tabularnewline
+\midrule
+\endfirsthead
+\toprule
+\begin{minipage}[b]{0.22\columnwidth}\centering\strut
+SCUTUM\strut
+\end{minipage} & \begin{minipage}[b]{0.22\columnwidth}\centering\strut
+STERGUM\strut
+\end{minipage}\tabularnewline
+\midrule
+\endhead
+\begin{minipage}[t]{0.22\columnwidth}\centering\strut
+Min. :0.0000\strut
+\end{minipage} & \begin{minipage}[t]{0.22\columnwidth}\centering\strut
+Min. :0.0000\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.22\columnwidth}\centering\strut
+1st Qu.:0.4000\strut
+\end{minipage} & \begin{minipage}[t]{0.22\columnwidth}\centering\strut
+1st Qu.:0.9000\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.22\columnwidth}\centering\strut
+Median :0.6000\strut
+\end{minipage} & \begin{minipage}[t]{0.22\columnwidth}\centering\strut
+Median :1.0000\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.22\columnwidth}\centering\strut
+Mean :0.6026\strut
+\end{minipage} & \begin{minipage}[t]{0.22\columnwidth}\centering\strut
+Mean :0.9132\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.22\columnwidth}\centering\strut
+3rd Qu.:0.9000\strut
+\end{minipage} & \begin{minipage}[t]{0.22\columnwidth}\centering\strut
+3rd Qu.:1.0000\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.22\columnwidth}\centering\strut
+Max. :1.0000\strut
+\end{minipage} & \begin{minipage}[t]{0.22\columnwidth}\centering\strut
+Max. :1.0000\strut
+\end{minipage}\tabularnewline
+\bottomrule
+\end{longtable}
+
+\subsubsection{AEG Description}\label{aeg-description}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{pander}\NormalTok{(}\KeywordTok{describe}\NormalTok{(AEG[,}\DecValTok{4}\NormalTok{:}\DecValTok{5}\NormalTok{]), }\DataTypeTok{caption =} \StringTok{"Table 4. Description of AEG Dataset"}\NormalTok{, }\DataTypeTok{split.table =} \OtherTok{Inf}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}cccccccccccccc@{}}
+\caption{Table 4. Description of AEG Dataset}\tabularnewline
+\toprule
+\begin{minipage}[b]{0.07\columnwidth}\centering\strut
+~\strut
+\end{minipage} & \begin{minipage}[b]{0.04\columnwidth}\centering\strut
+vars\strut
+\end{minipage} & \begin{minipage}[b]{0.03\columnwidth}\centering\strut
+n\strut
+\end{minipage} & \begin{minipage}[b]{0.05\columnwidth}\centering\strut
+mean\strut
+\end{minipage} & \begin{minipage}[b]{0.05\columnwidth}\centering\strut
+sd\strut
+\end{minipage} & \begin{minipage}[b]{0.05\columnwidth}\centering\strut
+median\strut
+\end{minipage} & \begin{minipage}[b]{0.05\columnwidth}\centering\strut
+trimmed\strut
+\end{minipage} & \begin{minipage}[b]{0.05\columnwidth}\centering\strut
+mad\strut
+\end{minipage} & \begin{minipage}[b]{0.03\columnwidth}\centering\strut
+min\strut
+\end{minipage} & \begin{minipage}[b]{0.03\columnwidth}\centering\strut
+max\strut
+\end{minipage} & \begin{minipage}[b]{0.04\columnwidth}\centering\strut
+range\strut
+\end{minipage} & \begin{minipage}[b]{0.05\columnwidth}\centering\strut
+skew\strut
+\end{minipage} & \begin{minipage}[b]{0.06\columnwidth}\centering\strut
+kurtosis\strut
+\end{minipage} & \begin{minipage}[b]{0.06\columnwidth}\centering\strut
+se\strut
+\end{minipage}\tabularnewline
+\midrule
+\endfirsthead
+\toprule
+\begin{minipage}[b]{0.07\columnwidth}\centering\strut
+~\strut
+\end{minipage} & \begin{minipage}[b]{0.04\columnwidth}\centering\strut
+vars\strut
+\end{minipage} & \begin{minipage}[b]{0.03\columnwidth}\centering\strut
+n\strut
+\end{minipage} & \begin{minipage}[b]{0.05\columnwidth}\centering\strut
+mean\strut
+\end{minipage} & \begin{minipage}[b]{0.05\columnwidth}\centering\strut
+sd\strut
+\end{minipage} & \begin{minipage}[b]{0.05\columnwidth}\centering\strut
+median\strut
+\end{minipage} & \begin{minipage}[b]{0.05\columnwidth}\centering\strut
+trimmed\strut
+\end{minipage} & \begin{minipage}[b]{0.05\columnwidth}\centering\strut
+mad\strut
+\end{minipage} & \begin{minipage}[b]{0.03\columnwidth}\centering\strut
+min\strut
+\end{minipage} & \begin{minipage}[b]{0.03\columnwidth}\centering\strut
+max\strut
+\end{minipage} & \begin{minipage}[b]{0.04\columnwidth}\centering\strut
+range\strut
+\end{minipage} & \begin{minipage}[b]{0.05\columnwidth}\centering\strut
+skew\strut
+\end{minipage} & \begin{minipage}[b]{0.06\columnwidth}\centering\strut
+kurtosis\strut
+\end{minipage} & \begin{minipage}[b]{0.06\columnwidth}\centering\strut
+se\strut
+\end{minipage}\tabularnewline
+\midrule
+\endhead
+\begin{minipage}[t]{0.07\columnwidth}\centering\strut
+\textbf{SCUTUM}\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+1\strut
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering\strut
+227\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+0.6026\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+0.2969\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+0.6\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+0.6224\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+0.2965\strut
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering\strut
+0\strut
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering\strut
+1\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+1\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+-0.4569\strut
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering\strut
+-0.8901\strut
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering\strut
+0.0197\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.07\columnwidth}\centering\strut
+\textbf{STERGUM}\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+2\strut
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering\strut
+227\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+0.9132\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+0.1735\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+1\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+0.9552\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+0\strut
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering\strut
+0\strut
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering\strut
+1\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+1\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+-3.094\strut
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering\strut
+10.62\strut
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering\strut
+0.01151\strut
+\end{minipage}\tabularnewline
+\bottomrule
+\end{longtable}
+
+\subsubsection{AEG Frequency Counts}\label{aeg-frequency-counts}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{pander}\NormalTok{(}\KeywordTok{ftable}\NormalTok{(AEGMosaic), }\DataTypeTok{caption =} \StringTok{"Table 5. AEG Frequencies"}\NormalTok{, }\DataTypeTok{split.table =} \OtherTok{Inf}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lcccccccccccc@{}}
+\caption{Table 5. AEG Frequencies}\tabularnewline
+\toprule
+\begin{minipage}[t]{0.10\columnwidth}\raggedright\strut
+\strut
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering\strut
+AEG\$SCUTUM\strut
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering\strut
+0\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0.1\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0.2\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0.3\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0.4\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0.5\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0.6\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0.7\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0.8\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0.9\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+1\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.10\columnwidth}\raggedright\strut
+AEG\$STERGUM\strut
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering\strut
+\strut
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering\strut
+\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.10\columnwidth}\raggedright\strut
+0\strut
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering\strut
+\strut
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering\strut
+1\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+1\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.10\columnwidth}\raggedright\strut
+0.1\strut
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering\strut
+\strut
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering\strut
+0\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+1\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.10\columnwidth}\raggedright\strut
+0.2\strut
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering\strut
+\strut
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering\strut
+1\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.10\columnwidth}\raggedright\strut
+0.3\strut
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering\strut
+\strut
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering\strut
+2\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+1\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+1\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.10\columnwidth}\raggedright\strut
+0.5\strut
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering\strut
+\strut
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering\strut
+0\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+1\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+1\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+1\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.10\columnwidth}\raggedright\strut
+0.6\strut
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering\strut
+\strut
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering\strut
+0\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+1\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+1\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+1\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+1\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.10\columnwidth}\raggedright\strut
+0.7\strut
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering\strut
+\strut
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering\strut
+1\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+1\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+1\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+1\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+1\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.10\columnwidth}\raggedright\strut
+0.8\strut
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering\strut
+\strut
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering\strut
+3\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+3\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+1\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+1\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+1\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+3\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+1\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+1\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+4\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+1\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+1\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.10\columnwidth}\raggedright\strut
+0.9\strut
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering\strut
+\strut
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering\strut
+1\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+4\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+6\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+3\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+6\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+4\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+5\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+4\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+11\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+2\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.10\columnwidth}\raggedright\strut
+1\strut
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering\strut
+\strut
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering\strut
+4\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+6\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+4\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+11\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+11\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+10\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+16\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+14\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+22\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+22\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+21\strut
+\end{minipage}\tabularnewline
+\bottomrule
+\end{longtable}
+
+\subsubsection{AEG Dispersion}\label{aeg-dispersion}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{boxplot}\NormalTok{(AEG[,}\DecValTok{4}\NormalTok{:}\DecValTok{5}\NormalTok{], }\DataTypeTok{col=}\KeywordTok{rainbow}\NormalTok{(}\DecValTok{2}\NormalTok{), }\DataTypeTok{main=}\StringTok{"AEG"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{Final_Analysis_files/figure-latex/AEG Box Plot-1} \end{center}
+
+\subsubsection{AEG Distribution}\label{aeg-distribution}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{par}\NormalTok{(}\DataTypeTok{mfrow=}\KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{,}\DecValTok{2}\NormalTok{))}
+\KeywordTok{hist}\NormalTok{(AEG$SCUTUM, }\DataTypeTok{xlab=}\StringTok{"Scutum"}\NormalTok{, }\DataTypeTok{main=}\StringTok{"AEG"}\NormalTok{, }\DataTypeTok{ylim =} \KeywordTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{150}\NormalTok{))}
+\KeywordTok{hist}\NormalTok{(AEG$STERGUM, }\DataTypeTok{xlab=}\StringTok{"Stergum"}\NormalTok{, }\DataTypeTok{main=}\StringTok{"AEG"}\NormalTok{, }\DataTypeTok{ylim =} \KeywordTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{150}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{Final_Analysis_files/figure-latex/AEG Within Species Data Distribution-1} \end{center}
+
+\subsubsection{AEG Chi-Square Test for
+Independence}\label{aeg-chi-square-test-for-independence}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{pander}\NormalTok{(}\KeywordTok{chisq.test}\NormalTok{(AEGMosaic), }\DataTypeTok{caption =} \StringTok{"Table 6. AEG Chi-Square Test for Independence"}\NormalTok{, }\DataTypeTok{split.table =} \OtherTok{Inf}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}ccc@{}}
+\caption{Table 6. AEG Chi-Square Test for Independence}\tabularnewline
+\toprule
+\begin{minipage}[b]{0.22\columnwidth}\centering\strut
+Test statistic\strut
+\end{minipage} & \begin{minipage}[b]{0.06\columnwidth}\centering\strut
+df\strut
+\end{minipage} & \begin{minipage}[b]{0.11\columnwidth}\centering\strut
+P value\strut
+\end{minipage}\tabularnewline
+\midrule
+\endfirsthead
+\toprule
+\begin{minipage}[b]{0.22\columnwidth}\centering\strut
+Test statistic\strut
+\end{minipage} & \begin{minipage}[b]{0.06\columnwidth}\centering\strut
+df\strut
+\end{minipage} & \begin{minipage}[b]{0.11\columnwidth}\centering\strut
+P value\strut
+\end{minipage}\tabularnewline
+\midrule
+\endhead
+\begin{minipage}[t]{0.22\columnwidth}\centering\strut
+111.2\strut
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering\strut
+90\strut
+\end{minipage} & \begin{minipage}[t]{0.11\columnwidth}\centering\strut
+0.06401\strut
+\end{minipage}\tabularnewline
+\bottomrule
+\end{longtable}
+
+\subsubsection{AEG Mosaic Plot}\label{aeg-mosaic-plot}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{mosaic}\NormalTok{(AEGMosaic, }\DataTypeTok{shade =} \OtherTok{TRUE}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{Final_Analysis_files/figure-latex/AEG Mosaic-1} \end{center}
+
+\subparagraph{AEG Discussion}\label{aeg-discussion}
+
+When looking at the AEG species, the stergum dataset appears to be
+heavily skewed while the scutum appears to be closer to normal.
+
+\subsection{ALB Data}\label{alb-data}
+
+\subsubsection{ALB Summary}\label{alb-summary}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{pander}\NormalTok{(}\KeywordTok{summary}\NormalTok{(ALB[,}\DecValTok{4}\NormalTok{:}\DecValTok{5}\NormalTok{]), }\DataTypeTok{caption =} \StringTok{"Table 7. Summary of ALB Dataset"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}cc@{}}
+\caption{Table 7. Summary of ALB Dataset}\tabularnewline
+\toprule
+\begin{minipage}[b]{0.22\columnwidth}\centering\strut
+SCUTUM\strut
+\end{minipage} & \begin{minipage}[b]{0.22\columnwidth}\centering\strut
+STERGUM\strut
+\end{minipage}\tabularnewline
+\midrule
+\endfirsthead
+\toprule
+\begin{minipage}[b]{0.22\columnwidth}\centering\strut
+SCUTUM\strut
+\end{minipage} & \begin{minipage}[b]{0.22\columnwidth}\centering\strut
+STERGUM\strut
+\end{minipage}\tabularnewline
+\midrule
+\endhead
+\begin{minipage}[t]{0.22\columnwidth}\centering\strut
+Min. :0.0000\strut
+\end{minipage} & \begin{minipage}[t]{0.22\columnwidth}\centering\strut
+Min. :0.000\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.22\columnwidth}\centering\strut
+1st Qu.:0.1000\strut
+\end{minipage} & \begin{minipage}[t]{0.22\columnwidth}\centering\strut
+1st Qu.:0.800\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.22\columnwidth}\centering\strut
+Median :0.1000\strut
+\end{minipage} & \begin{minipage}[t]{0.22\columnwidth}\centering\strut
+Median :1.000\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.22\columnwidth}\centering\strut
+Mean :0.2778\strut
+\end{minipage} & \begin{minipage}[t]{0.22\columnwidth}\centering\strut
+Mean :0.856\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.22\columnwidth}\centering\strut
+3rd Qu.:0.4000\strut
+\end{minipage} & \begin{minipage}[t]{0.22\columnwidth}\centering\strut
+3rd Qu.:1.000\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.22\columnwidth}\centering\strut
+Max. :1.0000\strut
+\end{minipage} & \begin{minipage}[t]{0.22\columnwidth}\centering\strut
+Max. :1.000\strut
+\end{minipage}\tabularnewline
+\bottomrule
+\end{longtable}
+
+\subsubsection{ALB Description}\label{alb-description}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{pander}\NormalTok{(}\KeywordTok{describe}\NormalTok{(ALB[,}\DecValTok{4}\NormalTok{:}\DecValTok{5}\NormalTok{]), }\DataTypeTok{caption =} \StringTok{"Table 8. Description of ALB Dataset"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}ccccccccc@{}}
+\caption{Table 8. Description of ALB Dataset (continued
+below)}\tabularnewline
+\toprule
+\begin{minipage}[b]{0.13\columnwidth}\centering\strut
+~\strut
+\end{minipage} & \begin{minipage}[b]{0.07\columnwidth}\centering\strut
+vars\strut
+\end{minipage} & \begin{minipage}[b]{0.07\columnwidth}\centering\strut
+n\strut
+\end{minipage} & \begin{minipage}[b]{0.09\columnwidth}\centering\strut
+mean\strut
+\end{minipage} & \begin{minipage}[b]{0.09\columnwidth}\centering\strut
+sd\strut
+\end{minipage} & \begin{minipage}[b]{0.09\columnwidth}\centering\strut
+median\strut
+\end{minipage} & \begin{minipage}[b]{0.10\columnwidth}\centering\strut
+trimmed\strut
+\end{minipage} & \begin{minipage}[b]{0.09\columnwidth}\centering\strut
+mad\strut
+\end{minipage} & \begin{minipage}[b]{0.05\columnwidth}\centering\strut
+min\strut
+\end{minipage}\tabularnewline
+\midrule
+\endfirsthead
+\toprule
+\begin{minipage}[b]{0.13\columnwidth}\centering\strut
+~\strut
+\end{minipage} & \begin{minipage}[b]{0.07\columnwidth}\centering\strut
+vars\strut
+\end{minipage} & \begin{minipage}[b]{0.07\columnwidth}\centering\strut
+n\strut
+\end{minipage} & \begin{minipage}[b]{0.09\columnwidth}\centering\strut
+mean\strut
+\end{minipage} & \begin{minipage}[b]{0.09\columnwidth}\centering\strut
+sd\strut
+\end{minipage} & \begin{minipage}[b]{0.09\columnwidth}\centering\strut
+median\strut
+\end{minipage} & \begin{minipage}[b]{0.10\columnwidth}\centering\strut
+trimmed\strut
+\end{minipage} & \begin{minipage}[b]{0.09\columnwidth}\centering\strut
+mad\strut
+\end{minipage} & \begin{minipage}[b]{0.05\columnwidth}\centering\strut
+min\strut
+\end{minipage}\tabularnewline
+\midrule
+\endhead
+\begin{minipage}[t]{0.13\columnwidth}\centering\strut
+\textbf{SCUTUM}\strut
+\end{minipage} & \begin{minipage}[t]{0.07\columnwidth}\centering\strut
+1\strut
+\end{minipage} & \begin{minipage}[t]{0.07\columnwidth}\centering\strut
+1014\strut
+\end{minipage} & \begin{minipage}[t]{0.09\columnwidth}\centering\strut
+0.2778\strut
+\end{minipage} & \begin{minipage}[t]{0.09\columnwidth}\centering\strut
+0.3049\strut
+\end{minipage} & \begin{minipage}[t]{0.09\columnwidth}\centering\strut
+0.1\strut
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering\strut
+0.2287\strut
+\end{minipage} & \begin{minipage}[t]{0.09\columnwidth}\centering\strut
+0.1483\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+0\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.13\columnwidth}\centering\strut
+\textbf{STERGUM}\strut
+\end{minipage} & \begin{minipage}[t]{0.07\columnwidth}\centering\strut
+2\strut
+\end{minipage} & \begin{minipage}[t]{0.07\columnwidth}\centering\strut
+1014\strut
+\end{minipage} & \begin{minipage}[t]{0.09\columnwidth}\centering\strut
+0.856\strut
+\end{minipage} & \begin{minipage}[t]{0.09\columnwidth}\centering\strut
+0.2349\strut
+\end{minipage} & \begin{minipage}[t]{0.09\columnwidth}\centering\strut
+1\strut
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering\strut
+0.9121\strut
+\end{minipage} & \begin{minipage}[t]{0.09\columnwidth}\centering\strut
+0\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+0\strut
+\end{minipage}\tabularnewline
+\bottomrule
+\end{longtable}
+
+\begin{longtable}[]{@{}cccccc@{}}
+\toprule
+\begin{minipage}[b]{0.16\columnwidth}\centering\strut
+~\strut
+\end{minipage} & \begin{minipage}[b]{0.07\columnwidth}\centering\strut
+max\strut
+\end{minipage} & \begin{minipage}[b]{0.09\columnwidth}\centering\strut
+range\strut
+\end{minipage} & \begin{minipage}[b]{0.10\columnwidth}\centering\strut
+skew\strut
+\end{minipage} & \begin{minipage}[b]{0.13\columnwidth}\centering\strut
+kurtosis\strut
+\end{minipage} & \begin{minipage}[b]{0.13\columnwidth}\centering\strut
+se\strut
+\end{minipage}\tabularnewline
+\midrule
+\endhead
+\begin{minipage}[t]{0.16\columnwidth}\centering\strut
+\textbf{SCUTUM}\strut
+\end{minipage} & \begin{minipage}[t]{0.07\columnwidth}\centering\strut
+1\strut
+\end{minipage} & \begin{minipage}[t]{0.09\columnwidth}\centering\strut
+1\strut
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering\strut
+1.205\strut
+\end{minipage} & \begin{minipage}[t]{0.13\columnwidth}\centering\strut
+0.1296\strut
+\end{minipage} & \begin{minipage}[t]{0.13\columnwidth}\centering\strut
+0.009575\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.16\columnwidth}\centering\strut
+\textbf{STERGUM}\strut
+\end{minipage} & \begin{minipage}[t]{0.07\columnwidth}\centering\strut
+1\strut
+\end{minipage} & \begin{minipage}[t]{0.09\columnwidth}\centering\strut
+1\strut
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering\strut
+-1.886\strut
+\end{minipage} & \begin{minipage}[t]{0.13\columnwidth}\centering\strut
+2.623\strut
+\end{minipage} & \begin{minipage}[t]{0.13\columnwidth}\centering\strut
+0.007378\strut
+\end{minipage}\tabularnewline
+\bottomrule
+\end{longtable}
+
+\subsubsection{ALB Frequency Counts}\label{alb-frequency-counts}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{pander}\NormalTok{(}\KeywordTok{ftable}\NormalTok{(ALBMosaic), }\DataTypeTok{caption =} \StringTok{"Table 9. ALB Frequencies"}\NormalTok{, }\DataTypeTok{split.table =} \OtherTok{Inf}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lcccccccccccc@{}}
+\caption{Table 9. ALB Frequencies}\tabularnewline
+\toprule
+\begin{minipage}[t]{0.10\columnwidth}\raggedright\strut
+\strut
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering\strut
+ALB\$SCUTUM\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0.1\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0.2\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0.3\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0.4\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0.5\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0.6\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0.7\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0.8\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0.9\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+1\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.10\columnwidth}\raggedright\strut
+ALB\$STERGUM\strut
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering\strut
+\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.10\columnwidth}\raggedright\strut
+0\strut
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering\strut
+\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+1\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+1\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+1\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+1\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.10\columnwidth}\raggedright\strut
+0.1\strut
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering\strut
+\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+5\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+4\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+4\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+1\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+1\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+2\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+2\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.10\columnwidth}\raggedright\strut
+0.2\strut
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering\strut
+\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+10\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+3\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+8\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+1\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+1\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+2\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+1\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.10\columnwidth}\raggedright\strut
+0.3\strut
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering\strut
+\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+12\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+7\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+3\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+2\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+1\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+1\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.10\columnwidth}\raggedright\strut
+0.4\strut
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering\strut
+\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+9\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+1\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+1\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+3\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+1\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.10\columnwidth}\raggedright\strut
+0.5\strut
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering\strut
+\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+15\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+9\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+7\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+4\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+5\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+1\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+2\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+2\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.10\columnwidth}\raggedright\strut
+0.6\strut
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering\strut
+\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+4\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+10\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+3\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+1\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+1\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+1\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+1\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+1\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.10\columnwidth}\raggedright\strut
+0.7\strut
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering\strut
+\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+6\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+10\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+3\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+1\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+2\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+1\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.10\columnwidth}\raggedright\strut
+0.8\strut
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering\strut
+\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+28\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+39\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+9\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+8\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+4\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+4\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+2\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+2\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+5\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+2\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+0\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.10\columnwidth}\raggedright\strut
+0.9\strut
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering\strut
+\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+39\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+60\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+21\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+15\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+11\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+5\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+7\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+3\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+6\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+13\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+1\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.10\columnwidth}\raggedright\strut
+1\strut
+\end{minipage} & \begin{minipage}[t]{0.10\columnwidth}\centering\strut
+\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+70\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+186\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+78\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+48\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+14\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+25\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+17\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+9\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+29\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+30\strut
+\end{minipage} & \begin{minipage}[t]{0.04\columnwidth}\centering\strut
+44\strut
+\end{minipage}\tabularnewline
+\bottomrule
+\end{longtable}
+
+\subsubsection{ALB Dispersion}\label{alb-dispersion}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{boxplot}\NormalTok{(ALB[,}\DecValTok{4}\NormalTok{:}\DecValTok{5}\NormalTok{], }\DataTypeTok{col=}\KeywordTok{rainbow}\NormalTok{(}\DecValTok{2}\NormalTok{), }\DataTypeTok{main=}\StringTok{"ALB"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{Final_Analysis_files/figure-latex/ALB Box Plot-1} \end{center}
+
+\subsubsection{ALB Distribution}\label{alb-distribution}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{par}\NormalTok{(}\DataTypeTok{mfrow=}\KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{,}\DecValTok{2}\NormalTok{))}
+\KeywordTok{hist}\NormalTok{(ALB$SCUTUM, }\DataTypeTok{xlab=}\StringTok{"Scutum"}\NormalTok{, }\DataTypeTok{main=}\StringTok{"ALB"}\NormalTok{)}
+\KeywordTok{hist}\NormalTok{(ALB$STERGUM, }\DataTypeTok{xlab=}\StringTok{"Stergum"}\NormalTok{, }\DataTypeTok{main=}\StringTok{"ALB"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{Final_Analysis_files/figure-latex/ALB Within Species Data Distribution-1} \end{center}
+
+\subsubsection{ALB Chi-Square Test for
+Independence}\label{alb-chi-square-test-for-independence}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{pander}\NormalTok{(}\KeywordTok{chisq.test}\NormalTok{(ALBMosaic), }\DataTypeTok{caption =} \StringTok{"Table 10. ALB Chi-Square Test for Independence"}\NormalTok{, }\DataTypeTok{split.table =} \OtherTok{Inf}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}ccc@{}}
+\caption{Table 10. ALB Chi-Square Test for Independence}\tabularnewline
+\toprule
+\begin{minipage}[b]{0.22\columnwidth}\centering\strut
+Test statistic\strut
+\end{minipage} & \begin{minipage}[b]{0.08\columnwidth}\centering\strut
+df\strut
+\end{minipage} & \begin{minipage}[b]{0.22\columnwidth}\centering\strut
+P value\strut
+\end{minipage}\tabularnewline
+\midrule
+\endfirsthead
+\toprule
+\begin{minipage}[b]{0.22\columnwidth}\centering\strut
+Test statistic\strut
+\end{minipage} & \begin{minipage}[b]{0.08\columnwidth}\centering\strut
+df\strut
+\end{minipage} & \begin{minipage}[b]{0.22\columnwidth}\centering\strut
+P value\strut
+\end{minipage}\tabularnewline
+\midrule
+\endhead
+\begin{minipage}[t]{0.22\columnwidth}\centering\strut
+168.8\strut
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\centering\strut
+100\strut
+\end{minipage} & \begin{minipage}[t]{0.22\columnwidth}\centering\strut
+2.073e-05 * * *\strut
+\end{minipage}\tabularnewline
+\bottomrule
+\end{longtable}
+
+\subsubsection{ALB Mosaic Plot}\label{alb-mosaic-plot}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{mosaic}\NormalTok{(ALBMosaic, }\DataTypeTok{shade =} \OtherTok{TRUE}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{Final_Analysis_files/figure-latex/ALB Mosaic-1} \end{center}
+
+\subparagraph{ALB Discussion}\label{alb-discussion}
+
+When looking at the ALB species, the scutum and stergum datasets appear
+to be heavily skewed, though in opposite directions.
+
+\subsection{Between Species Data (AEG and
+ALB)}\label{between-species-data-aeg-and-alb}
+
+\subsubsection{Between Species AEG and ALB Frequency
+Counts}\label{between-species-aeg-and-alb-frequency-counts}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{pander}\NormalTok{(}\KeywordTok{ftable}\NormalTok{(StergumMosaic), }\DataTypeTok{caption =} \StringTok{"Table 11. Stergum Frequencies"}\NormalTok{, }\DataTypeTok{split.table =} \OtherTok{Inf}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lcccccccccccc@{}}
+\caption{Table 11. Stergum Frequencies}\tabularnewline
+\toprule
+\begin{minipage}[t]{0.08\columnwidth}\raggedright\strut
+\strut
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\centering\strut
+STERGUM\strut
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering\strut
+0\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+0.1\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+0.2\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+0.3\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+0.4\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+0.5\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+0.6\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+0.7\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+0.8\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+0.9\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+1\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.08\columnwidth}\raggedright\strut
+SPECIES\strut
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\centering\strut
+\strut
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering\strut
+\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.08\columnwidth}\raggedright\strut
+AEG\strut
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\centering\strut
+\strut
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering\strut
+2\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+1\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+1\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+4\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+0\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+3\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+4\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+5\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+20\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+46\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+141\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.08\columnwidth}\raggedright\strut
+ALB\strut
+\end{minipage} & \begin{minipage}[t]{0.08\columnwidth}\centering\strut
+\strut
+\end{minipage} & \begin{minipage}[t]{0.03\columnwidth}\centering\strut
+4\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+19\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+26\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+26\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+15\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+45\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+22\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+23\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+103\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+181\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+550\strut
+\end{minipage}\tabularnewline
+\bottomrule
+\end{longtable}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{pander}\NormalTok{(}\KeywordTok{ftable}\NormalTok{(ScutumMosaic), }\DataTypeTok{caption =} \StringTok{"Table 12. Scutum Frequencies"}\NormalTok{, }\DataTypeTok{split.table =} \OtherTok{Inf}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lcccccccccccc@{}}
+\caption{Table 12. Scutum Frequencies}\tabularnewline
+\toprule
+\begin{minipage}[t]{0.08\columnwidth}\raggedright\strut
+\strut
+\end{minipage} & \begin{minipage}[t]{0.07\columnwidth}\centering\strut
+SCUTUM\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+0\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+0.1\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+0.2\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+0.3\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+0.4\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+0.5\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+0.6\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+0.7\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+0.8\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+0.9\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+1\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.08\columnwidth}\raggedright\strut
+SPECIES\strut
+\end{minipage} & \begin{minipage}[t]{0.07\columnwidth}\centering\strut
+\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.08\columnwidth}\raggedright\strut
+AEG\strut
+\end{minipage} & \begin{minipage}[t]{0.07\columnwidth}\centering\strut
+\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+13\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+10\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+9\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+20\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+18\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+22\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+23\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+20\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+32\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+36\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+24\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.08\columnwidth}\raggedright\strut
+ALB\strut
+\end{minipage} & \begin{minipage}[t]{0.07\columnwidth}\centering\strut
+\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+199\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+329\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+138\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+78\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+31\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+44\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+32\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+16\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+44\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+52\strut
+\end{minipage} & \begin{minipage}[t]{0.05\columnwidth}\centering\strut
+51\strut
+\end{minipage}\tabularnewline
+\bottomrule
+\end{longtable}
+
+\subsubsection{Between Species Scutum
+Distribution}\label{between-species-scutum-distribution}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{par}\NormalTok{(}\DataTypeTok{mfrow=}\KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{,}\DecValTok{2}\NormalTok{))}
+\KeywordTok{hist}\NormalTok{(sternite$SCUTUM[sternite$SPECIES==}\StringTok{"AEG"}\NormalTok{], }\DataTypeTok{xlab=}\StringTok{"Scutum"}\NormalTok{, }\DataTypeTok{main=}\StringTok{"AEG"}\NormalTok{)}
+\KeywordTok{hist}\NormalTok{(sternite$SCUTUM[sternite$SPECIES==}\StringTok{"ALB"}\NormalTok{], }\DataTypeTok{xlab=}\StringTok{"Scutum"}\NormalTok{, }\DataTypeTok{main=}\StringTok{"ALB"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{Final_Analysis_files/figure-latex/Scutum Between Species Data Distribution-1} \end{center}
+
+\subsubsection{Between Species Scutum Distribution -
+Stacked}\label{between-species-scutum-distribution---stacked}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{barplot}\NormalTok{(ScutumMosaic, }\DataTypeTok{beside=}\OtherTok{FALSE}\NormalTok{, }\DataTypeTok{legend.text=}\OtherTok{TRUE}\NormalTok{, }\DataTypeTok{xlab=}\StringTok{"Stergum"}\NormalTok{, }\DataTypeTok{ylab=}\StringTok{"Count"}\NormalTok{, }\DataTypeTok{main=}\StringTok{"AEG/ALB"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{Final_Analysis_files/figure-latex/unnamed-chunk-2-1} \end{center}
+
+\subsubsection{Between Species Scutum Spine
+Plot}\label{between-species-scutum-spine-plot}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{spineplot}\NormalTok{(ScutumMosaic2, }\DataTypeTok{xlab=}\StringTok{"Species"}\NormalTok{, }\DataTypeTok{ylab=}\StringTok{"Scutum"}\NormalTok{, }\DataTypeTok{main=}\StringTok{"AEG/ALB"}\NormalTok{, }\DataTypeTok{col =} \KeywordTok{terrain.colors}\NormalTok{(}\DecValTok{11}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{Final_Analysis_files/figure-latex/unnamed-chunk-3-1} \end{center}
+
+\subsubsection{Between Species Scutum Chi-Square Test for
+Independence}\label{between-species-scutum-chi-square-test-for-independence}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{pander}\NormalTok{(}\KeywordTok{chisq.test}\NormalTok{(ScutumMosaic), }\DataTypeTok{caption =} \StringTok{"Table 13. Between Species Scutum Chi-Square Test for Independence"}\NormalTok{, }\DataTypeTok{split.table =} \OtherTok{Inf}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}ccc@{}}
+\caption{Table 13. Between Species Scutum Chi-Square Test for
+Independence}\tabularnewline
+\toprule
+\begin{minipage}[b]{0.22\columnwidth}\centering\strut
+Test statistic\strut
+\end{minipage} & \begin{minipage}[b]{0.06\columnwidth}\centering\strut
+df\strut
+\end{minipage} & \begin{minipage}[b]{0.22\columnwidth}\centering\strut
+P value\strut
+\end{minipage}\tabularnewline
+\midrule
+\endfirsthead
+\toprule
+\begin{minipage}[b]{0.22\columnwidth}\centering\strut
+Test statistic\strut
+\end{minipage} & \begin{minipage}[b]{0.06\columnwidth}\centering\strut
+df\strut
+\end{minipage} & \begin{minipage}[b]{0.22\columnwidth}\centering\strut
+P value\strut
+\end{minipage}\tabularnewline
+\midrule
+\endhead
+\begin{minipage}[t]{0.22\columnwidth}\centering\strut
+232.6\strut
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering\strut
+10\strut
+\end{minipage} & \begin{minipage}[t]{0.22\columnwidth}\centering\strut
+2.492e-44 * * *\strut
+\end{minipage}\tabularnewline
+\bottomrule
+\end{longtable}
+
+\subsubsection{Between Species Scutum Mosaic
+Plot}\label{between-species-scutum-mosaic-plot}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{mosaic}\NormalTok{(ScutumMosaic, }\DataTypeTok{shade =} \OtherTok{TRUE}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{Final_Analysis_files/figure-latex/Between Species Scutum Mosaic-1} \end{center}
+
+\subsubsection{Between Species Stergum
+Distribution}\label{between-species-stergum-distribution}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{par}\NormalTok{(}\DataTypeTok{mfrow=}\KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{,}\DecValTok{2}\NormalTok{))}
+\KeywordTok{hist}\NormalTok{(sternite$STERGUM[sternite$SPECIES==}\StringTok{"AEG"}\NormalTok{], }\DataTypeTok{xlab=}\StringTok{"Stergum"}\NormalTok{, }\DataTypeTok{main=}\StringTok{"AEG"}\NormalTok{)}
+\KeywordTok{hist}\NormalTok{(sternite$STERGUM[sternite$SPECIES==}\StringTok{"ALB"}\NormalTok{], }\DataTypeTok{xlab=}\StringTok{"Stergum"}\NormalTok{, }\DataTypeTok{main=}\StringTok{"ALB"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{Final_Analysis_files/figure-latex/Stergum Between Species Data Distribution-1} \end{center}
+
+\subsubsection{Between Species Stergum Distribution -
+Stacked}\label{between-species-stergum-distribution---stacked}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{barplot}\NormalTok{(StergumMosaic, }\DataTypeTok{beside=}\OtherTok{FALSE}\NormalTok{, }\DataTypeTok{legend.text=}\OtherTok{TRUE}\NormalTok{, }\DataTypeTok{xlab=}\StringTok{"Stergum"}\NormalTok{, }\DataTypeTok{ylab=}\StringTok{"Count"}\NormalTok{, }\DataTypeTok{main=}\StringTok{"AEG/ALB"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{Final_Analysis_files/figure-latex/unnamed-chunk-4-1} \end{center}
+
+\subsubsection{Between Species Stergum Spine
+Plot}\label{between-species-stergum-spine-plot}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{spineplot}\NormalTok{(StergumMosaic2, }\DataTypeTok{xlab=}\StringTok{"Species"}\NormalTok{, }\DataTypeTok{ylab=}\StringTok{"Stergum"}\NormalTok{, }\DataTypeTok{main=}\StringTok{"AEG/ALB"}\NormalTok{, }\DataTypeTok{col =} \KeywordTok{terrain.colors}\NormalTok{(}\DecValTok{11}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{Final_Analysis_files/figure-latex/unnamed-chunk-5-1} \end{center}
+
+\subsubsection{Between Species Stergum Chi-Square Test for
+Independence}\label{between-species-stergum-chi-square-test-for-independence}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{pander}\NormalTok{(}\KeywordTok{chisq.test}\NormalTok{(StergumMosaic), }\DataTypeTok{caption =} \StringTok{"Table 14. Between Species Stergum Chi-Square Test for Independence"}\NormalTok{, }\DataTypeTok{split.table =} \OtherTok{Inf}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}ccc@{}}
+\caption{Table 14. Between Species Stergum Chi-Square Test for
+Independence}\tabularnewline
+\toprule
+\begin{minipage}[b]{0.22\columnwidth}\centering\strut
+Test statistic\strut
+\end{minipage} & \begin{minipage}[b]{0.06\columnwidth}\centering\strut
+df\strut
+\end{minipage} & \begin{minipage}[b]{0.14\columnwidth}\centering\strut
+P value\strut
+\end{minipage}\tabularnewline
+\midrule
+\endfirsthead
+\toprule
+\begin{minipage}[b]{0.22\columnwidth}\centering\strut
+Test statistic\strut
+\end{minipage} & \begin{minipage}[b]{0.06\columnwidth}\centering\strut
+df\strut
+\end{minipage} & \begin{minipage}[b]{0.14\columnwidth}\centering\strut
+P value\strut
+\end{minipage}\tabularnewline
+\midrule
+\endhead
+\begin{minipage}[t]{0.22\columnwidth}\centering\strut
+18.77\strut
+\end{minipage} & \begin{minipage}[t]{0.06\columnwidth}\centering\strut
+10\strut
+\end{minipage} & \begin{minipage}[t]{0.14\columnwidth}\centering\strut
+0.04326 *\strut
+\end{minipage}\tabularnewline
+\bottomrule
+\end{longtable}
+
+\subsubsection{Between Species Stergum Mosaic
+Plot}\label{between-species-stergum-mosaic-plot}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{mosaic}\NormalTok{(StergumMosaic, }\DataTypeTok{shade =} \OtherTok{TRUE}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\includegraphics{Final_Analysis_files/figure-latex/Between Species Stergum Mosaic-1} \end{center}
+
+\subparagraph{Between Species
+Discussion}\label{between-species-discussion}
+
+When looking between the AEG and ALB species, the stergum datasets
+appear to be heavily skewed in the same direction while the scutum
+datstets appear to be different between species.

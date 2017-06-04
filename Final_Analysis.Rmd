@@ -1,0 +1,331 @@
+---
+title: "SMMS Sternite Dataset Anaysis"
+author:
+- affiliation: University of Florida
+  email: gkross@ufl.edu
+  footnote: Corresponding Author
+  name: Gregory K. Ross
+date: '`r format(Sys.time(), ''%B %d, %Y'')`'
+output:
+  pdf_document:
+    citation_package: natbib
+    fig_caption: yes
+    keep_tex: yes
+    latex_engine: pdflatex
+    template: null
+  html_document: default
+fontsize: 11pt
+geometry: margin=0.5 in
+keywords: AEG, ALB, Scutum, Stergum, Sternite
+fontfamily: null
+abstract: This document provides a statistical analyis of percent of scales on the
+  scutum compared to stergum on AEG and ALB species.The percentages recorded were;
+  2%,5%,10%,20%,30%,40%,50%,60%,70%,80%,90%,100%.  2% was if only 1 to 3 scales were
+  visible.  Percentages were estimated by only one person to reduce error of what
+  was considered for example; 20%, 30%, etc.  The mosquitoes were always identified
+  by looking at the stergum first, then stergum scale coverage was estimated, then
+  scutum scales were used to confirm or disconfirm identification, then scutum scale
+  coverage was estimated.  Same process on every mosquito.
+---
+<style type="text/css">
+
+body{ /* Normal  */
+   font-size: 12px;
+}
+td {  /* Table  */
+   font-size: 11px;
+}
+h1 { /* Header 1 */
+ font-size: 26px;
+ color: DarkBlue;
+}
+h2 { /* Header 2 */
+ font-size: 20px;
+ color: DarkBlue;
+}
+h3 { /* Header 3 */
+ font-size: 16px;
+ color: DarkBlue;
+}
+code.r{ /* Code block */
+  font-size: 11px;
+}
+pre { /* Code block */
+  font-size: 11px
+}
+</style>
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
+
+```{r}
+plot(cars)
+```
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
+
+
+
+
+
+This analysis is done in a reproducible research manner. All Tables, Figures and Statistical Analyses were created in the open source software package R.
+
+# Analysis
+
+### Load Data
+
+```{r setup, include=TRUE}
+knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message=FALSE, comment = NA)
+require(knitr)
+require(bookdown)
+library("pander", lib.loc="~/R/win-library/3.3")
+library("readr", lib.loc="~/R/win-library/3.3")
+library("psych", lib.loc="~/R/win-library/3.3")
+library("vcd", lib.loc="~/R/win-library/3.3")
+library("hexbin", lib.loc="~/R/win-library/3.3")
+setwd("C:/Users/Gregory/ownCloud/Sarasota")
+sternite <- read_csv("sternite.csv")
+attach(sternite)
+SPECIES<-as.factor(SPECIES)
+AEG <- subset(sternite, sternite$SPECIES=="AEG")
+ALB <- subset(sternite, sternite$SPECIES=="ALB")
+AEGMosaic <- structable(AEG$SCUTUM ~ AEG$STERGUM)
+ALBMosaic <- structable(ALB$SCUTUM ~ ALB$STERGUM)
+StergumMosaic <- structable(STERGUM ~ SPECIES)
+StergumMosaic2 <- table(SPECIES,STERGUM)
+ScutumMosaic <- structable(SCUTUM ~ SPECIES)
+ScutumMosaic2 <- table(SPECIES,SCUTUM)
+knitr::include_graphics(rep("FMEL.jpg", 1))
+```
+
+## AEG/ALB Data (Both Species)
+
+### AEG/ALB Summary
+
+```{r Table 1}
+pander(summary(sternite[,4:5]), caption = "Table 1. Summary of Sternite Dataset", split.table = Inf)
+```
+
+### AEG/ALB Description
+
+```{r Table 2}
+pander(describe(sternite[,4:5]), caption = "Table 2. Description of Sternite Dataset", split.table = Inf)
+```
+
+### AEG/ALB Dispersion
+
+```{r Figure 1, fig.width=6, fig.height=6, fig.lp="Figure ", fig.align="center", fig.cap = 'Figure 1.'}
+boxplot(sternite[,4:5], col=rainbow(2), main="AEG/ALB")
+```
+
+### AEG/ALB Distribution
+
+```{r Figure 2, fig.width=8, fig.height=4, fig.lp="Figure ", fig.align="center", fig.cap = 'Figure 2.'}
+par(mfrow=c(1,2))
+hist(sternite$SCUTUM, xlab="Scutum", main="AEG/ALB", ylim = c(0, 700))
+hist(sternite$STERGUM, xlab="Stergum", main="AEG/ALB", ylim = c(0, 700))
+```
+
+### AEG/ALB Hexbin of Scutum vs Stergum
+
+```{r Figure 3, fig.width=6, fig.height=6, fig.lp="Figure ", fig.align="center", fig.cap = 'Figure 3.'}
+res <- hexbin(STERGUM, SCUTUM, xbins=11)
+plot(res, main="AEG/ALB", colramp=colorRampPalette(c('lightblue','darkblue')))
+
+```
+
+##### AEG/ALB Discussion
+
+  When looking at both species, the scutum and stergum datasets appear to be heavily skewed, though in opposite directions.
+
+## AEG Data
+
+### AEG Summary
+
+```{r AEG Data Summarize, fig.lp="Figure ", fig.align="center", fig.cap="1"}
+pander(summary(AEG[,4:5]), caption = "Table 3. Summary of AEG Dataset", split.table = Inf)
+```
+
+### AEG Description
+
+```{r AEG Description}
+pander(describe(AEG[,4:5]), caption = "Table 4. Description of AEG Dataset", split.table = Inf)
+```
+
+### AEG Frequency Counts
+
+```{r AEG Frequency Table, fig.width=8, fig.height=4, fig.lp="Figure ", fig.align="center"}
+pander(ftable(AEGMosaic), caption = "Table 5. AEG Frequencies", split.table = Inf)
+```
+
+### AEG Dispersion
+
+```{r AEG Box Plot, fig.width=6, fig.height=6, fig.lp="Figure ", fig.align="center"}
+boxplot(AEG[,4:5], col=rainbow(2), main="AEG")
+
+```
+
+### AEG Distribution
+
+```{r AEG Within Species Data Distribution, fig.width=8, fig.height=4, fig.lp="Figure ", fig.align="center"}
+par(mfrow=c(1,2))
+hist(AEG$SCUTUM, xlab="Scutum", main="AEG", ylim = c(0, 150))
+hist(AEG$STERGUM, xlab="Stergum", main="AEG", ylim = c(0, 150))
+
+```
+
+
+### AEG Chi-Square Test for Independence
+
+```{r AEG Chi-Square Test for Independence}
+pander(chisq.test(AEGMosaic), caption = "Table 6. AEG Chi-Square Test for Independence", split.table = Inf)
+```
+
+### AEG Mosaic Plot
+
+```{r AEG Mosaic, fig.width=8, fig.height=8, fig.lp="Figure ", fig.align="center"}
+mosaic(AEGMosaic, shade = TRUE)
+```
+
+##### AEG Discussion
+
+  When looking at the AEG species, the stergum dataset appears to be heavily skewed while the scutum appears to be closer to normal.
+
+
+
+## ALB Data
+
+### ALB Summary
+
+```{r ALB Data Summarize, fig.lp="Figure ", fig.align="center"}
+
+pander(summary(ALB[,4:5]), caption = "Table 7. Summary of ALB Dataset")
+
+```
+
+### ALB Description
+
+```{r ALB Description}
+pander(describe(ALB[,4:5]), caption = "Table 8. Description of ALB Dataset")
+```
+
+### ALB Frequency Counts
+
+```{r ALB Frequency Table, fig.width=8, fig.height=4, fig.lp="Figure ", fig.align="center"}
+pander(ftable(ALBMosaic), caption = "Table 9. ALB Frequencies", split.table = Inf)
+```
+
+### ALB Dispersion
+
+```{r ALB Box Plot, fig.width=6, fig.height=6, fig.lp="Figure ", fig.align="center"}
+boxplot(ALB[,4:5], col=rainbow(2), main="ALB")
+
+```
+
+### ALB Distribution
+
+```{r ALB Within Species Data Distribution, fig.width=8, fig.height=4, fig.lp="Figure ", fig.align="center"}
+par(mfrow=c(1,2))
+hist(ALB$SCUTUM, xlab="Scutum", main="ALB")
+hist(ALB$STERGUM, xlab="Stergum", main="ALB")
+
+```
+
+### ALB Chi-Square Test for Independence
+
+```{r ALB Chi-Square Test for Independence}
+pander(chisq.test(ALBMosaic), caption = "Table 10. ALB Chi-Square Test for Independence", split.table = Inf)
+```
+
+### ALB Mosaic Plot
+
+```{r ALB Mosaic, fig.width=8, fig.height=8, fig.lp="Figure ", fig.align="center"}
+mosaic(ALBMosaic, shade = TRUE)
+```
+
+##### ALB Discussion
+
+  When looking at the ALB species, the scutum and stergum datasets appear to be heavily skewed, though in opposite directions.
+
+
+
+## Between Species Data (AEG and ALB)
+
+### Between Species AEG and ALB Frequency Counts
+
+```{r Between Species AEG and ALB Frequency Tables, fig.width=8, fig.height=4, fig.lp="Figure ", fig.align="center", fig.cap="1"}
+pander(ftable(StergumMosaic), caption = "Table 11. Stergum Frequencies", split.table = Inf)
+pander(ftable(ScutumMosaic), caption = "Table 12. Scutum Frequencies", split.table = Inf)
+```
+
+### Between Species Scutum Distribution
+
+```{r Scutum Between Species Data Distribution, fig.width=8, fig.height=4, fig.lp="Figure ", fig.align="center"}
+par(mfrow=c(1,2))
+hist(sternite$SCUTUM[sternite$SPECIES=="AEG"], xlab="Scutum", main="AEG")
+hist(sternite$SCUTUM[sternite$SPECIES=="ALB"], xlab="Scutum", main="ALB")
+```
+
+### Between Species Scutum Distribution - Stacked
+
+```{r, fig.width=8, fig.height=4, fig.lp="Figure ", fig.align="center"}
+barplot(ScutumMosaic, beside=FALSE, legend.text=TRUE, xlab="Stergum", ylab="Count", main="AEG/ALB")
+```
+
+### Between Species Scutum Spine Plot
+
+```{r, fig.width=8, fig.height=8, fig.lp="Figure ", fig.align="center"}
+spineplot(ScutumMosaic2, xlab="Species", ylab="Scutum", main="AEG/ALB", col = terrain.colors(11))
+```
+
+### Between Species Scutum Chi-Square Test for Independence
+
+```{r Between Species Scutum Chi-Square Test for Independence}
+pander(chisq.test(ScutumMosaic), caption = "Table 13. Between Species Scutum Chi-Square Test for Independence", split.table = Inf)
+```
+
+### Between Species Scutum Mosaic Plot
+
+```{r Between Species Scutum Mosaic, fig.width=8, fig.height=8, fig.lp="Figure ", fig.align="center"}
+mosaic(ScutumMosaic, shade = TRUE)
+```
+
+### Between Species Stergum Distribution
+
+```{r Stergum Between Species Data Distribution, fig.width=8, fig.height=4, fig.lp="Figure ", fig.align="center"}
+par(mfrow=c(1,2))
+hist(sternite$STERGUM[sternite$SPECIES=="AEG"], xlab="Stergum", main="AEG")
+hist(sternite$STERGUM[sternite$SPECIES=="ALB"], xlab="Stergum", main="ALB")
+```
+
+### Between Species Stergum Distribution - Stacked
+
+```{r, fig.width=8, fig.height=4, fig.lp="Figure ", fig.align="center"}
+barplot(StergumMosaic, beside=FALSE, legend.text=TRUE, xlab="Stergum", ylab="Count", main="AEG/ALB")
+```
+
+### Between Species Stergum Spine Plot
+
+```{r, fig.width=8, fig.height=8, fig.lp="Figure ", fig.align="center"}
+spineplot(StergumMosaic2, xlab="Species", ylab="Stergum", main="AEG/ALB", col = terrain.colors(11))
+```
+
+### Between Species Stergum Chi-Square Test for Independence
+
+```{r Between Species Stergum Chi-Square Test for Independence}
+pander(chisq.test(StergumMosaic), caption = "Table 14. Between Species Stergum Chi-Square Test for Independence", split.table = Inf)
+```
+
+### Between Species Stergum Mosaic Plot
+
+```{r Between Species Stergum Mosaic, fig.width=8, fig.height=8, fig.lp="Figure ", fig.align="center"}
+mosaic(StergumMosaic, shade = TRUE)
+
+```
+
+##### Between Species Discussion
+
+  When looking between the AEG and ALB species, the stergum datasets appear to be heavily skewed in the same direction while the scutum datstets appear to be different between species.
